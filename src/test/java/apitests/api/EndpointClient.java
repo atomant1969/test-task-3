@@ -8,7 +8,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-
+import java.time.Duration;
 
 /**
  * This class sends requests to the apps endpoint and receives the responses
@@ -46,6 +46,7 @@ public class EndpointClient {
             .header("Content-Type", "application/x-www-form-urlencoded")
             .header("Accept", "application/json")
             .header("X-Api-Key", config.getApiKey())
+            .timeout(Duration.ofSeconds(config.getAppTimeoutSeconds()))
             .POST(HttpRequest.BodyPublishers.ofString(body))
             .build();
 
