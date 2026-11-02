@@ -1,0 +1,92 @@
+name: 🐛 Professional Bug Report
+description: File a structured report to help us reproduce and fix the bug.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this issue! Please provide as much detail as possible.
+
+  - type: input
+    id: version
+    attributes:
+      label: App Version / Build Number
+      description: "What version of the application were you using? (e.g., v1.2.0, commit hash, or Latest Production)"
+      placeholder: "e.g., v1.4.2"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity / Impact
+      options:
+        - "Critical (App crashes, data loss, complete blocker)"
+        - "Major (Core functionality broken, but workaround exists)"
+        - "Minor (Visual bug, typo, minor user experience annoyance)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Details
+      description: "Provide details about your operating system, browser, or device."
+      value: |
+        Windows 10 Pro English
+        Chrome Version 154.0.8037.95 (Official Build) (64-bit)
+      placeholder: "E.g., macOS 14.2, Chrome 120.0, Production environment."
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: "A clear and concise description of what the bug is."
+      placeholder: "E.g., The checkout page throws a 500 error when clicking 'Submit' with an empty cart."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: "Tell us exactly how to trigger the issue from a fresh state."
+      value: |
+        Login with username@domain.com/Test_Pass_ForUser
+        Select the Enterprise account from the top select menu
+        Select settings in the left Navigation menu
+        select facilitators from the settings page menu
+        Select the + Facilitator Button
+        Select the + Email Invitation button
+        Select the disabled Send Invitation button
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: "What did you expect to happen?"
+      placeholder: "E.g., The user should be redirected to the success page and receive a confirmation email."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior / Error Logs
+      description: "What actually happened? Paste any console errors, stack traces, or exact message outputs here."
+      placeholder: "E.g., The button spins indefinitely and the developer console shows 'TypeError: Cannot read property id of undefined'."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checkboxes
+    attributes:
+      label: Validation
+      options:
+        - label: "I have verified this bug exists on the latest version of the application."
+          required: true

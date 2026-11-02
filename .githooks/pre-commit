@@ -1,0 +1,28 @@
+#!/bin/sh
+# Check staged content before Git creates a commit.
+set -eu
+
+git diff --cached --check
+
+if git diff --cached --name-only --diff-filter=ACMR |
+  grep -E '\.java$' >/dev/null; then
+  if [ ! -f .githooks/verify-project ]; then
+    printf '%s\n' \
+      'Commit blocked: missing .githooks/verify-project.' \
+      'Configure formatting, Javadoc, static analysis, compilation, and tests' \
+      'in that script before committing Java changes.' >&2
+    exit 1
+  fi
+fi
+
+if [ -f .githooks/verify-project ]; then
+  # Verification normally reads the working tree. Reject partial staging so the
+  # checked files match the content that will actually be committed.
+  if ! git diff --quiet; then
+    printf '%s\n' \
+      'Commit blocked: tracked files have unstaged changes.' \
+      'Stage or stash those changes before running project verification.' >&2
+    exit 1
+  fi
+  sh .githooks/verify-project
+fi
