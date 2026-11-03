@@ -20,9 +20,15 @@
 - Use explicit imports and the project's formatter. Keep editor and build formatting consistent.
 - Document each explicitly declared method and constructor with meaningful Javadoc,
   including relevant parameters, return values, and exceptions. Document each type's responsibility.
+- Пишите комментарии и Javadoc проекта на русском и английском языках, русский первым.
+  Write project comments and Javadoc in both Russian and English, with Russian first.
+  Не изменяйте комментарии сторонних инструментов и лицензионные уведомления.
+  Leave third-party tool comments and license notices unchanged.
 
 ## Test design
 
+- Write report-facing test names, steps, descriptions, attachment labels, and project-defined
+  assertion messages in Russian. Preserve protocol values and original application responses.
 - Follow the supplied scenarios and assert actual observable outcomes.
 - Use clear assertions with useful failure messages; never add placeholder assertions.
 - Keep tests independent, repeatable, and safe to run in any order.

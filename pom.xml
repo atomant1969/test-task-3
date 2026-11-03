@@ -23,6 +23,7 @@
         <jar.version>3.4.2</jar.version>
         <allure.maven.version>2.15.2</allure.maven.version>
         <allure.report.version>2.29.0</allure.report.version>
+        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
     </properties>
 
     <dependencies>
@@ -63,6 +64,27 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${resources.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-allure-categories</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${allure.results.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/test/resources/allure</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>categories.json</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -80,7 +102,7 @@
                         <include>**/*Test.java</include>
                     </includes>
                     <systemPropertyVariables>
-                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                        <allure.results.directory>${allure.results.directory}</allure.results.directory>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -98,7 +120,7 @@
                 <version>${allure.maven.version}</version>
                 <configuration>
                     <reportVersion>${allure.report.version}</reportVersion>
-                    <resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
+                    <resultsDirectory>${allure.results.directory}</resultsDirectory>
                 </configuration>
             </plugin>
         </plugins>

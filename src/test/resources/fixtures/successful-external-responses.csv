@@ -1,0 +1,4 @@
+bodyDescription,responseBody
+пустое тело,""
+текст не в формате JSON,not JSON
+тело с сообщением об ошибке,"{""result"":""ERROR""}"

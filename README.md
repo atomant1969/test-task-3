@@ -1,23 +1,74 @@
 ﻿# Java Test Task
 
-Repository layout for Java test automation. Tests and supporting classes belong
-under `src/test`; configuration files and test data go in `src/test/resources`.
+Tests for the Spring Boot service supplied with the assignment.
+Stack: Java 17, JUnit 5, Maven, WireMock and Allure.
+The tests send requests to the application. WireMock stands in for the external
+service at `/auth` and `/doAction`.
 
-## Maven
+## Run the application
 
-Requires JDK 17. The Maven wrapper downloads Maven and dependencies on first use.
+You need JDK 17. Place the supplied JAR in the project directory and run:
+
+```powershell
+java "-Dsecret=qazWSXedc" "-Dmock=http://localhost:8888/" -jar internal-0.0.1-SNAPSHOT.jar
+```
+
+Leave this terminal open. The application uses port 8080; the tests manage
+WireMock on port 8888. That port must be free before a run, so don't run two
+copies of the suite at once.
+
+## Run the tests
+
+In another terminal:
 
 ```powershell
 .\mvnw.cmd clean test
 ```
 
-On Linux or macOS, use `sh ./mvnw clean test`. Generate an Allure report after
-running tests with `./mvnw.cmd allure:report` on Windows or
-`sh ./mvnw allure:report` on Linux/macOS. Test classes use the `Test` suffix.
-The build fails if no tests are found.
+The wrapper downloads Maven and dependencies on first use. On Linux or macOS,
+use `sh ./mvnw` instead of `.\mvnw.cmd` for each command.
 
-In Eclipse, use **Maven → Update Project** after adding the POM. If the project
-has no Maven menu, use **Configure → Convert to Maven Project**.
+Settings are in `src/test/resources/config/test.properties`: application URL,
+API key, request timeout and WireMock port. The loader reads this file only;
+environment variables and command-line properties don't override it.
+
+The key `qazWSXedc` comes from the assignment and is kept here for this task only.
+For a real environment, load secrets from environment variables or the CI
+credential store instead of committing them. Session tokens are generated test
+data, not passwords.
+
+## Allure report
+
+After the tests, generate and open the report:
+
+```powershell
+.\mvnw.cmd allure:report
+.\mvnw.cmd allure:serve
+```
+
+Run these separately from `test`, even if the tests fail. The HTML report is in
+`target/site/allure-maven-plugin`; `allure:serve` opens a local preview.
+Stop it with Ctrl+C.
+
+Test names, steps and explanations are in Russian. Choose **Русский** in the
+language menu for the Allure interface. API responses and library diagnostics
+are left in their original language. Code comments are in Russian and English.
+
+Attachments show the HTTP status and the response's `result` and `message`.
+The API key and session token are masked if echoed. Raw response bodies and
+request headers aren't attached. Generated reports are ignored by Git.
+
+## Coverage and findings
+
+The suite covers LOGIN, ACTION and LOGOUT, separate user sessions, login after
+logout, invalid inputs, API keys and external service errors. It also checks
+that external response bodies don't change how the status is handled.
+
+The run on 3 November 2026 completed 112 cases: 108 passed and 4 failed.
+Two failures show the same token-validation bug. The other two concern whitespace
+in action names, which the task doesn't specify. Allure lists these in separate
+categories. See [test findings](docs/test-findings.md) for reproduction steps
+and coverage limits. The failing tests remain enabled.
 
 ## Source layout
 
@@ -25,60 +76,45 @@ has no Maven menu, use **Configure → Convert to Maven Project**.
 src/test/
 ├── java/apitests/
 │   ├── api/          API client and request handling
-│   ├── pages/        Page objects for UI tests
+│   ├── pages/        Reserved for UI page objects; unused in this API task
 │   ├── tests/        Test scenarios and assertions
 │   ├── config/       Configuration loading and validation
-│   └── support/      Test setup, resource handling, and diagnostics
+│   └── support/      Response attachments and masking
 └── resources/
-    ├── config/       Environment configuration files
-    └── fixtures/     Synthetic test data and sample payloads
+    ├── allure/       Report category rules
+    ├── config/       Test settings
+    └── fixtures/     External response data
 ```
 
-Empty folders contain `.gitkeep` files so they appear in Git. Remove these as
-the folders gain real files.
+The `pages` folder is kept with `.gitkeep`; this task has no UI tests.
 
 ## Reporting bugs
 
-Report bugs through the repository's [Issues page](https://github.com/atomant1969/test-task-3/issues/new/choose)
-and select the bug report form. Include the application version, steps to
-reproduce, expected and actual results, and relevant logs.
-
-The form and issue settings are maintained in [`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE).
-Bug reports are stored as GitHub issues, rather than files in that folder.
-
-## Test credentials
-
-The API key `qazWSXedc` is supplied with the assignment and is used only for this
-test task. Real API keys and passwords must not be hardcoded or committed; use
-environment variables or the CI credential store instead. The request's `token`
-field is test session data, separate from the API key.
+Use the bug report form on the [Issues page](https://github.com/atomant1969/test-task-3/issues/new/choose).
+Include the application version, reproduction steps, expected and actual results,
+and any useful logs. The form is defined in
+[`.github/ISSUE_TEMPLATE`](.github/ISSUE_TEMPLATE); submitted reports become GitHub issues.
 
 ## Editor setup
 
-The workspace settings enable Java formatting and import organization on save
-using the Red Hat Java extension. `.editorconfig` sets indentation, encoding,
-and line endings. Extension recommendations are in `.vscode/extensions.json`.
+The Red Hat Java extension formats code and organizes imports on save.
+Workspace settings are in `.vscode`; `.editorconfig` sets indentation, encoding
+and line endings. In Eclipse, use **Maven → Update Project** to load the POM.
 
 ## Commit checks
 
-Enable the local hooks after cloning:
+To use the local hook directory:
 
 ```sh
 git config core.hooksPath .githooks
 ```
 
-The pre-commit hook checks staged changes for whitespace errors. Java changes
-also require a `.githooks/verify-project` script with the build and quality
-checks. Without it, the hook blocks Java commits. See [.githooks/README.md](.githooks/README.md)
-for details and [AGENTS.md](AGENTS.md) for project conventions.
+The hook is currently disabled, and `.githooks/verify-project` is missing.
+It does not check commits yet. The intended checks are listed in
+[.githooks/README.md](.githooks/README.md); project conventions are in
+[AGENTS.md](AGENTS.md).
 
 ## CI
 
-The repository has entry-point files for both CI systems:
-
-- `.github/workflows/ci.yml` for GitHub Actions.
-- `Jenkinsfile` for Jenkins.
-
-Both are comment-only placeholders. Neither currently runs a pipeline. Build
-and test commands must be added before enabling CI; both pipelines should run
-the same verification commands.
+`.github/workflows/ci.yml` and `Jenkinsfile` reserve a place for GitHub Actions
+and Jenkins. Both contain comments only: CI isn't configured to run tests yet.

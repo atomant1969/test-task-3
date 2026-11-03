@@ -1,19 +1,20 @@
-name: 🐛 Professional Bug Report
-description: File a structured report to help us reproduce and fix the bug.
+name: Bug report
+description: Report an issue with the API and include steps to reproduce it.
 title: "[Bug]: "
 labels: ["bug", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report this issue! Please provide as much detail as possible.
+        Include the request, expected result, actual response, and external-service setup.
+        Redact API keys and use synthetic tokens only.
 
   - type: input
     id: version
     attributes:
       label: App Version / Build Number
-      description: "What version of the application were you using? (e.g., v1.2.0, commit hash, or Latest Production)"
-      placeholder: "e.g., v1.4.2"
+      description: "Include the application JAR name and build identifier, if available."
+      placeholder: "internal-0.0.1-SNAPSHOT.jar"
     validations:
       required: true
 
@@ -24,7 +25,7 @@ body:
       options:
         - "Critical (App crashes, data loss, complete blocker)"
         - "Major (Core functionality broken, but workaround exists)"
-        - "Minor (Visual bug, typo, minor user experience annoyance)"
+        - "Minor (Incorrect error wording or another low-impact issue)"
     validations:
       required: true
 
@@ -32,11 +33,12 @@ body:
     id: environment
     attributes:
       label: Environment Details
-      description: "Provide details about your operating system, browser, or device."
-      value: |
-        Windows 10 Pro English
-        Chrome Version 154.0.8037.95 (Official Build) (64-bit)
-      placeholder: "E.g., macOS 14.2, Chrome 120.0, Production environment."
+      description: "Include your OS, Java version, application URL, and WireMock port."
+      placeholder: |
+        OS:
+        Java version:
+        Application URL: http://localhost:8080
+        WireMock port: 8888
     validations:
       required: false
 
@@ -45,7 +47,7 @@ body:
     attributes:
       label: Bug Description
       description: "A clear and concise description of what the bug is."
-      placeholder: "E.g., The checkout page throws a 500 error when clicking 'Submit' with an empty cart."
+      placeholder: "LOGIN rejects a valid 32-character token containing Z."
     validations:
       required: true
 
@@ -53,15 +55,13 @@ body:
     id: reproduction
     attributes:
       label: Steps to Reproduce
-      description: "Tell us exactly how to trigger the issue from a fresh state."
-      value: |
-        Login with username@domain.com/Test_Pass_ForUser
-        Select the Enterprise account from the top select menu
-        Select settings in the left Navigation menu
-        select facilitators from the settings page menu
-        Select the + Facilitator Button
-        Select the + Email Invitation button
-        Select the disabled Send Invitation button
+      description: "Include session prerequisites, WireMock responses, and the request method, path, headers, and form fields. Do not include API-key values."
+      placeholder: |
+        1. Start the application with the configured API key and mock URL.
+        2. Stub POST /auth to return HTTP 200.
+        3. Send POST /endpoint with X-Api-Key: [redacted],
+           Content-Type: application/x-www-form-urlencoded, and Accept: application/json.
+        4. Set action=LOGIN and token to 32 uppercase Z characters.
     validations:
       required: true
 
@@ -69,8 +69,8 @@ body:
     id: expected
     attributes:
       label: Expected Behavior
-      description: "What did you expect to happen?"
-      placeholder: "E.g., The user should be redirected to the success page and receive a confirmation email."
+      description: "State the expected behavior and the assignment requirement it follows from."
+      placeholder: 'LOGIN accepts the documented A-Z0-9 token format and returns {"result":"OK"} when /auth succeeds.'
     validations:
       required: true
 
@@ -78,8 +78,8 @@ body:
     id: actual
     attributes:
       label: Actual Behavior / Error Logs
-      description: "What actually happened? Paste any console errors, stack traces, or exact message outputs here."
-      placeholder: "E.g., The button spins indefinitely and the developer console shows 'TypeError: Cannot read property id of undefined'."
+      description: "Include the HTTP status, JSON response, observed external requests, and relevant Allure evidence. Redact credentials from logs."
+      placeholder: 'HTTP 400 with result ERROR and a message requiring ^[0-9A-F]{32}$. No request reaches /auth.'
     validations:
       required: true
 
@@ -88,5 +88,5 @@ body:
     attributes:
       label: Validation
       options:
-        - label: "I have verified this bug exists on the latest version of the application."
+        - label: "I reproduced this issue on the application build specified above."
           required: true
